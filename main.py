@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # (C) 2013 Francois Cauwe
 
@@ -6,7 +6,6 @@
 #Global libs
 import sys, time, threading
 import subprocess
-import Queue
 
 #Private libs
 import listen
