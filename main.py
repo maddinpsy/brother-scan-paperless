@@ -4,51 +4,59 @@
 
 
 #Global libs
-import sys, time, threading
-import subprocess
+import sys
+import time
+import threading
+import argparse
+import yaml
 
 #Private libs
 import listen
 import snmp
-import XmlDict
 
-conf=dict()
-
-def load_config():
-#    logger.info("Loading Config...")
-    global conf
-    conf=XmlDict.loadXml("global.xml")
-
-def launch_snmp():
-#    logger.info("Snmp service...")
-    global conf
-    snmp.launch(conf)
-
-def launch_listen():
-#    logger.info("Loading Listening service...")
-    global conf
-    listen.launch(conf)
-
-
-
- 
 def main():
-    #logging.config.fileConfig("config/logger.conf")
-    #global logger
-    #logger=logging.getLogger("main")
-  
+    parser = argparse.ArgumentParser(
+        description='Brother network scanner server')
+    parser.add_argument('bind_addr', metavar='BIND_ADDR',
+                        type=str,
+                        help='IP address to bind UDP socket to')
+    parser.add_argument('-p', '--bind-port', metavar='PORT',
+                        type=int, default=54925,
+                        help='UDP port number to bind UDP socket to')
+    parser.add_argument('-A', '--advertise-addr', metavar='ADDR',
+                        type=str, default=None,
+                        help='IP address to advertise to scanner')
+    parser.add_argument('-P', '--advertise-port', metavar='PORT',
+                        type=int, default=None,
+                        help='UDP port number to advertise to scanner')
+    parser.add_argument('scanner_addr', metavar='SCANNER_ADDR',
+                        type=str,
+                        help='IP address of scanner')
+    parser.add_argument('-c', '--config', metavar='FILE',
+                        type=str, default='brother-scan.yaml',
+                        help='Configuration file')
+    args = parser.parse_args()
+    if args.advertise_addr is None:
+        args.advertise_addr = args.bind_addr
+    if args.advertise_port is None:
+        args.advertise_port = args.bind_port
+
     # Loading global configuration
-    load_config()
-  
-    # Start Snmp
-    snmpThread = threading.Thread(target=launch_snmp)
-    snmpThread.start()
+    try:
+        with open(args.config) as configfile:
+            config = yaml.load(configfile)
+    except FileNotFoundError as e:
+        print('Error: %s: %s'%(e.strerror, e.filename))
+        sys.exit(1)
 
     # Start Snmp
-    listenThread = threading.Thread(target=launch_listen)
+    listenThread = threading.Thread(target=listen.launch, args=(args, config))
     listenThread.start()
+    time.sleep(1)
 
-
+    # Start Snmp
+    snmpThread = threading.Thread(target=snmp.launch, args=(args, config))
+    snmpThread.start()
 
     # Wait for closing
     snmpThread.join()
@@ -56,4 +64,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

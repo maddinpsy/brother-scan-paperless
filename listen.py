@@ -1,28 +1,35 @@
-#!/usr/bin/python
+import socket
+import subprocess
 
-from socket import *
-import sys,os
-import select
-from subprocess import call
+from scanto import scanto
 
+def launch(args, config):
+    addr = (args.bind_addr, args.bind_port)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_socket.bind(addr)
+    print("Listening on %s:%d"%(addr))
 
-def launch(conf):
-  address = ('',54925)
-  server_socket = socket(AF_INET, SOCK_DGRAM)
-  server_socket.bind(address)
-  print("Listening")
-
-  while(1):
-    recv_data, addr = server_socket.recvfrom(2048)
-    #print recv_data
-    response_array = recv_data.split(";")
-    user = response_array[2].split("=")[1].replace('\"','')
-    function = response_array[3].split("=")[1]
-    print("Event recieved: scan " + function + " for " + user)
-    for option in conf["menu"]["option"]:
-      if ((option["type"].lower()==function.lower()) and (option["name"]==user)):
-        print("Starting " + option["script"])
-        call([os.path.dirname(os.path.realpath(__file__)) + os.sep + option["script"], option["type"], option["name"], option["config"]])    
-
-    recv_data, addr = server_socket.recvfrom(2048)
-
+    while(1):
+        data, addr = server_socket.recvfrom(2048)
+        print("Got UDP packet: %d bytes from %s:%s"%(
+            len(data), addr[0], addr[1]))
+        if len(data) < 4 or data[0] != 2 or data[1] != 0 or data[3] != 0x30:
+            print('Error: dropping unknown UDP data: %d bytes'%(len(data)))
+            continue
+        msg = data[4:].decode('utf-8')
+        print('Received:', msg)
+        msgd = {}
+        for item in msg.split(';'):
+            if not item:
+                continue
+            name, value = item.split('=')
+            if name == 'USER':
+                value = value[1:-1]
+            msgd[name] = value
+        for menu_func, menu_users in config['menu'].items():
+            for menu_user, menu_entry in menu_users.items():
+                menu_func = menu_func.upper()
+                if msgd['FUNC'] == menu_func and msgd['USER'] == menu_user:
+                    scanto(msgd['FUNC'], menu_entry)
+                    break
+        server_socket.recvfrom(len(data))
