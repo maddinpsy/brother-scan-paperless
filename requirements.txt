@@ -1,0 +1,8 @@
+pkg-resources==0.0.0
+ply==3.10
+pyasn1==0.4.2
+pycryptodomex==3.4.12
+pysmi==0.2.2
+pysnmp==4.4.4
+PyYAML==3.12
+Wand==0.4.4
