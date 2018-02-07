@@ -37,7 +37,7 @@ def scanto(func, options):
             options['dir'] = '/tmp'
         dst = options['dir']
 
-    os.makedirs(dst,  exist_ok=True)
+    os.makedirs(dst, exist_ok=True)
     now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     adf = options.pop('adf', False)
 
@@ -57,7 +57,6 @@ def scanto(func, options):
         subprocess.call(cmd)
         for f in pdffiles:
             os.remove(f)
-
     else:
         cmd = ['scanimage']
         add_scan_options(cmd, options)

@@ -2,12 +2,12 @@
 
 # (C) 2013 Francois Cauwe
 
-
 #Global libs
 import sys
 import time
 import threading
 import argparse
+import socket
 import yaml
 
 #Private libs
@@ -19,13 +19,13 @@ def main():
         description='Brother network scanner server')
     parser.add_argument('bind_addr', metavar='BIND_ADDR',
                         type=str,
-                        help='IP address to bind UDP socket to')
+                        help='IP/host to bind UDP socket to')
     parser.add_argument('-p', '--bind-port', metavar='PORT',
                         type=int, default=54925,
                         help='UDP port number to bind UDP socket to')
     parser.add_argument('-A', '--advertise-addr', metavar='ADDR',
                         type=str, default=None,
-                        help='IP address to advertise to scanner')
+                        help='IP/host to advertise to scanner')
     parser.add_argument('-P', '--advertise-port', metavar='PORT',
                         type=int, default=None,
                         help='UDP port number to advertise to scanner')
@@ -40,6 +40,11 @@ def main():
         args.advertise_addr = args.bind_addr
     if args.advertise_port is None:
         args.advertise_port = args.bind_port
+
+    # Resolv hosts
+    args.bind_addr = socket.gethostbyname(args.bind_addr)
+    args.advertise_addr = socket.gethostbyname(args.advertise_addr)
+    args.scanner_addr = socket.gethostbyname(args.scanner_addr)
 
     # Loading global configuration
     try:
