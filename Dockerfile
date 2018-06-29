@@ -1,9 +1,6 @@
 FROM python:3.6
 MAINTAINER Esben Haabendal, esben@haabendal.dk
 
-# Bind mount your configuration file to /brscan.yaml or whatever $CONFIG_FILE
-# is set to
-
 # This is where the scan output will be written to
 VOLUME /output
 
@@ -21,7 +18,6 @@ COPY requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
 
 # Install Brother scanner driver
-# (http://support.brother.com/g/s/id/linux/en/download_scn.html)
 COPY brscan4-0.4.4-1.amd64.deb /tmp/
 RUN dpkg --install /tmp/brscan4-*.deb
 

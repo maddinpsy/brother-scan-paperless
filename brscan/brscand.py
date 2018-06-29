@@ -34,7 +34,7 @@ def main():
                         type=str,
                         help='IP address of scanner')
     parser.add_argument('-c', '--config', metavar='FILE',
-                        type=str, default='brscan.yaml',
+                        type=str, default='brother-scan.yaml',
                         help='Configuration file')
     args = parser.parse_args()
     if args.advertise_addr is None:
