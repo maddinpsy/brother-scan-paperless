@@ -1,7 +1,7 @@
 import socket
 import subprocess
 
-from scanto import scanto
+from .scanto import scanto
 
 def launch(args, config):
     addr = (args.bind_addr, args.bind_port)

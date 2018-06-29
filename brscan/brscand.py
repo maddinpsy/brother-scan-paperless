@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # (C) 2013 Francois Cauwe
+# (C) 2015-2018 Esben Haabendal
 
 #Global libs
 import sys
@@ -11,8 +12,8 @@ import socket
 import yaml
 
 #Private libs
-import listen
-import snmp
+from . import listen
+from . import snmp
 
 def main():
     parser = argparse.ArgumentParser(
@@ -33,7 +34,7 @@ def main():
                         type=str,
                         help='IP address of scanner')
     parser.add_argument('-c', '--config', metavar='FILE',
-                        type=str, default='brother-scan.yaml',
+                        type=str, default='brscan.yaml',
                         help='Configuration file')
     args = parser.parse_args()
     if args.advertise_addr is None:

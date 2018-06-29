@@ -45,6 +45,7 @@ def scanto(func, options):
         cmd = ['scanadf',
                '--output-file', os.path.join(dst, 'scan_%s_%%d.pnm'%(now))]
         add_scan_options(cmd, options)
+        print('# ' + ' '.join(cmd))
         subprocess.call(cmd)
         pnmfiles = []
         pdffiles = []
@@ -54,6 +55,7 @@ def scanto(func, options):
             pnmfiles.append(pnmfile)
             pdffiles.append(pdffile)
         cmd = ['pdfunite'] + pdffiles + [os.path.join(dst, 'scan_%s.pdf'%(now))]
+        print('# ' + ' '.join(cmd))
         subprocess.call(cmd)
         for f in pdffiles:
             os.remove(f)
@@ -62,6 +64,7 @@ def scanto(func, options):
         add_scan_options(cmd, options)
         pnmfile = os.path.join(dst, 'scan_%s.pnm'%(now))
         with open(pnmfile, 'w') as pnm:
+            print('# ' + ' '.join(cmd))
             process = subprocess.Popen(cmd, stdout=pnm)
             process.wait()
         pdffile = '%s.pdf'%(pnmfile[:-4])
