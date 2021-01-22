@@ -100,3 +100,6 @@ brscand 192.168.0.100 192.168.0.10
 
 * https://www.mcbsys.com/blog/2014/11/register-pc-on-brother-scanner/
 * https://github.com/jmesmon/brother2/blob/master/PROTO
+
+## Tested devices
+ * MFC-L2710DN
