@@ -1,4 +1,5 @@
 FROM python:3.6
+ARG BRSCAN_DEB=brscan4-0.4.9-1.amd64.deb
 MAINTAINER Esben Haabendal, esben@haabendal.dk
 
 # This is where the scan output will be written to
@@ -18,7 +19,7 @@ COPY requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
 
 # Install Brother scanner driver
-COPY brscan4-0.4.4-1.amd64.deb /tmp/
+COPY $BRSCAN_DEB /tmp/
 RUN dpkg --install /tmp/brscan4-*.deb
 
 # Fixup symbolic links

@@ -11,21 +11,20 @@ provided here.
 ### Requirements
 
 * Docker installed.
-* The brscan4-0.4.4-1.amd64.deb file which you need to get from Brother.
-
-Re. the brscan4-0.4.4-1.amd64.deb file, the latest one you get if you go to
-http://support.brother.com/g/s/id/linux/en/download_scn.html is older (version
-0.4.2-1 currently), but if you ask Google for help, you can find the newer
-versions.  Some scanners (like my MFC-L2700DW) requires version 0.4.3-1 or
-newer.  You are most probably best of using the latest one you can find.
+* The latest proprietary brscan4 deb from Brother
+  * I had to go through their 'Downloads' page for my device (https://support.brother.com/g/b/productsearch.aspx?c=us&lang=en&content=dl)
+  * The Dockerfile defaults to the deb name `brscan4-0.4.9-1.amd64.deb`
 
 ### Build image
 
-Make sure you have downloaded the brscan4-0.4.4-1.amd64.deb file and placed it
-in the top-level directory of the repository.
+Make sure you have downloaded the brscan4 deb file and placed it
+in the top-level directory of the repository next to the Dockerfile.
+
+Adapt `BRSCAN_DEB` if the version has changed.
 
 ```
-docker build -t brscan .
+python3 setup.py build sdist
+docker build -t brscan --build-arg BRSCAN_DEB="brscan4-0.4.9-1.amd64.deb" .
 ```
 
 ### Configuration
@@ -39,11 +38,11 @@ To run brscand with the following setup:
 * MFC-L2700DW scanner.
 * Scanner at IP address 192.168.0.10.
 * Host OS at IP address 192.168.0.100.
-* Output written to /data/brscan
+* Output written to $HOME/brscan
 
 ```sh
 docker run --rm \
-  -v /data/brscan:/output -v $(pwd)/brother-scan.yaml:/brother-scan.yaml \
+  -v $HOME/brscan:/output -v $(pwd)/brother-scan.yaml:/brother-scan.yaml \
   -e SCANNER_MODEL=MFC-L2700DW -e SCANNER_IP=192.168.0.10 \
   -e ADVERTISE_IP=192.168.0.100 -p 54925:54925/udp \
   brscan
