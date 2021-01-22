@@ -3,7 +3,7 @@
 # (C) 2013 Francois Cauwe
 # (C) 2015-2018 Esben Haabendal
 
-#Global libs
+# Global libs
 import sys
 import time
 import threading
@@ -13,9 +13,10 @@ import yaml
 
 from yaml import CLoader
 
-#Private libs
+# Private libs
 from . import listen
 from . import snmp
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -54,7 +55,7 @@ def main():
         with open(args.config) as configfile:
             config = yaml.load(configfile, Loader=CLoader)
     except FileNotFoundError as e:
-        print('Error: %s: %s'%(e.strerror, e.filename))
+        print('Error: %s: %s' % (e.strerror, e.filename))
         sys.exit(1)
 
     # Start Snmp
@@ -69,6 +70,7 @@ def main():
     # Wait for closing
     snmpThread.join()
     listenThread.join()
+
 
 if __name__ == '__main__':
     main()
