@@ -30,6 +30,9 @@ RUN mkdir /usr/lib/sane \
 COPY dist/brscan-0.0.1.tar.gz /tmp/
 RUN pip install --no-binary :all: /tmp/brscan-*.tar.gz
 
+# Disable ImageMagick policies for now
+RUN rm /etc/ImageMagick-6/policy.xml
+
 # Add run script and set it as default command
 ADD run.sh /
 CMD /run.sh
