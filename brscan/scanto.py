@@ -1,5 +1,6 @@
 import subprocess
 import os
+import shutil
 import datetime
 import wand.image
 import glob
@@ -37,24 +38,32 @@ def scanto(func, options):
             options['dir'] = '/tmp'
         dst = options['dir']
 
+    uid = options['uid']
+    gid = options['gid']
+    tmp = '/tmp'
+
     os.makedirs(dst, exist_ok=True)
+    os.makedirs(tmp, exist_ok=True)
+
     now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     adf = options.pop('adf', False)
 
     if adf:
         cmd = ['scanadf',
-               '--output-file', os.path.join(dst, 'scan_%s_%%d.pnm'%(now))]
+               '--output-file', os.path.join(tmp, 'scan_%s_%%d.pnm'%(now))]
         add_scan_options(cmd, options)
         print('# ' + ' '.join(cmd))
         subprocess.call(cmd)
         pnmfiles = []
         pdffiles = []
-        for pnmfile in glob.glob(os.path.join(dst, 'scan_%s_*.pnm'%(now))):
+        for pnmfile in sorted(glob.glob(os.path.join(tmp, 'scan_%s_*.pnm'%(now))), 
+				key=os.path.getmtime):
             pdffile = '%s.pdf'%(pnmfile[:-4])
             pnmtopdf(pnmfile, pdffile, options['resolution'])
             pnmfiles.append(pnmfile)
             pdffiles.append(pdffile)
-        cmd = ['pdfunite'] + pdffiles + [os.path.join(dst, 'scan_%s.pdf'%(now))]
+        outputfile = os.path.join(tmp, 'scan_%s.pdf'%(now))
+        cmd = ['pdfunite'] + pdffiles + [outputfile]
         print('# ' + ' '.join(cmd))
         subprocess.call(cmd)
         for f in pdffiles:
@@ -62,7 +71,7 @@ def scanto(func, options):
     else:
         cmd = ['scanimage']
         add_scan_options(cmd, options)
-        pnmfile = os.path.join(dst, 'scan_%s.pnm'%(now))
+        pnmfile = os.path.join(tmp, 'scan_%s.pnm'%(now))
         with open(pnmfile, 'w') as pnm:
             print('# ' + ' '.join(cmd))
             process = subprocess.Popen(cmd, stdout=pnm)
@@ -70,3 +79,8 @@ def scanto(func, options):
         pdffile = '%s.pdf'%(pnmfile[:-4])
         pnmtopdf(pnmfile, pdffile, options['resolution'])
         print('Wrote', pdffile)
+        outputfile = pdffile
+    newfile = outputfile.replace(tmp, dst)
+    print('Moving', outputfile, 'to', newfile)
+    shutil.move(outputfile, newfile)
+    os.chown(newfile, uid, gid)
