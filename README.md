@@ -9,9 +9,9 @@ up
 - Multipage scans were being assembled in a random order but the filenames are sequential, so forced a sort
 
 Follows the old instructions below to get going for the most part. Copy the sample files, adjust to needs, add 
-Brother's brscan4 deb and fire.
+Brother's brscan4 deb, run the `python3 setup.py build sdist` and fire off the docker-compose file
 
---
+---
 
 # brother-scan
 
