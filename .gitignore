@@ -39,3 +39,5 @@ nosetests.xml
 
 # Brother packages
 brscan*.deb
+docker-compose.yml
+brother-scan.yaml

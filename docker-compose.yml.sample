@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  brother-scan:
+    build: 
+      context: .
+      args: 
+        - BRSCAN_DEB=brscan4-0.4.11-1.amd64.deb
+    restart: unless-stopped
+    ports:
+      - 54925:54925/udp
+    volumes:
+      - /paperless/consume:/output
+      - ./brother-scan.yaml:/brother-scan.yaml:ro
+    environment:
+      - SCANNER_NAME=Brother MFC
+      - SCANNER_MODEL=MFC-L2710DW
+      - SCANNER_IP=10.0.0.50
+      - ADVERTISE_IP=10.0.0.10
+      - BIND_IP=0.0.0.0
