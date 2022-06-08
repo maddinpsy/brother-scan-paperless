@@ -1,3 +1,18 @@
+# brother-scan-paperless
+
+Some quick modifications to the brother-scan docker to suit my needs to scan from my Brother printer directly to 
+the Consume dir for Paperless. I had to change a few things
+
+- It needed to set proper uid:gid. Hacky but they must be specified in brother-scan.yaml now
+- The temp files needed to be processed somewhere other than the consume dir, so paperless didn't try to pick them 
+up
+- Multipage scans were being assembled in a random order but the filenames are sequential, so forced a sort
+
+Follows the old instructions below to get going for the most part. Copy the sample files, adjust to needs, add 
+Brother's brscan4 deb and fire.
+
+--
+
 # brother-scan
 
 This tool is alternative to the brscan-skey with automatic document feeder
